@@ -1,7 +1,7 @@
 [solution]
-name = "my-team-solution-v1"      # Solution name
-definition = "fused_moe"          # Track: fused_moe | sparse_attention | gated_delta_net
-author = "team-name"              # Team/author name
+name = "3_sparse_attention_v1"      # Solution name
+definition = "dsa_topk_indexer_fp8_h64_d128_topk2048_ps64"
+author = "3"              # Team/author name
 
 [build]
 language = "triton"               # triton | cuda
