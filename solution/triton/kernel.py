@@ -57,20 +57,22 @@ if _HAS_TRITON:
         BLOCK_TOKENS: tl.constexpr,
         BLOCK_HEADS: tl.constexpr,
         BLOCK_D: tl.constexpr,
+        NUM_HEADS: tl.constexpr,
+        HEAD_DIM: tl.constexpr,
     ):
         pid_tok = tl.program_id(0)
         tok_offsets = pid_tok * BLOCK_TOKENS + tl.arange(0, BLOCK_TOKENS)
         tok_mask = tok_offsets < seq_len
         acc_tok = tl.zeros((BLOCK_TOKENS,), dtype=tl.float32)
 
-        for h_start in range(0, NUM_INDEX_HEADS, BLOCK_HEADS):
+        for h_start in range(0, NUM_HEADS, BLOCK_HEADS):
             head_offsets = h_start + tl.arange(0, BLOCK_HEADS)
-            head_mask = head_offsets < NUM_INDEX_HEADS
+            head_mask = head_offsets < NUM_HEADS
             dot_hk = tl.zeros((BLOCK_HEADS, BLOCK_TOKENS), dtype=tl.float32)
 
-            for d_start in range(0, INDEX_HEAD_DIM, BLOCK_D):
+            for d_start in range(0, HEAD_DIM, BLOCK_D):
                 d_offsets = d_start + tl.arange(0, BLOCK_D)
-                d_mask = d_offsets < INDEX_HEAD_DIM
+                d_mask = d_offsets < HEAD_DIM
 
                 q_ptrs = q_ptr + head_offsets[:, None] * stride_qh + d_offsets[None, :] * stride_qd
                 q_tile = tl.load(
@@ -186,6 +188,8 @@ def _weighted_relu_scores_triton(q_b: torch.Tensor, k_tokens: torch.Tensor, w_b:
         k_tokens.stride(0),
         k_tokens.stride(1),
         out.stride(0),
+        NUM_HEADS=NUM_INDEX_HEADS,
+        HEAD_DIM=INDEX_HEAD_DIM,
     )
     return out
 
