@@ -88,7 +88,7 @@ if _HAS_TRITON:
                     other=0.0,
                 ).to(tl.float32)
 
-                dot_hk += tl.dot(q_tile, k_tile)
+                dot_hk += tl.dot(q_tile, k_tile, input_precision="ieee")
 
             dot_hk = tl.maximum(dot_hk, 0.0)
             w = tl.load(w_ptr + head_offsets, mask=head_mask, other=0.0).to(tl.float32)
