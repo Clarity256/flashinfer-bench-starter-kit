@@ -35,10 +35,10 @@ if _HAS_TRITON:
 
     @triton.autotune(
         configs=[
-            triton.Config({"BLOCK_TOKENS": 64, "BLOCK_HEADS": 8, "BLOCK_D": 32}, num_warps=4, num_stages=2),
-            triton.Config({"BLOCK_TOKENS": 128, "BLOCK_HEADS": 8, "BLOCK_D": 32}, num_warps=8, num_stages=2),
             triton.Config({"BLOCK_TOKENS": 128, "BLOCK_HEADS": 16, "BLOCK_D": 32}, num_warps=8, num_stages=2),
-            triton.Config({"BLOCK_TOKENS": 256, "BLOCK_HEADS": 8, "BLOCK_D": 32}, num_warps=8, num_stages=3),
+            triton.Config({"BLOCK_TOKENS": 64, "BLOCK_HEADS": 16, "BLOCK_D": 32}, num_warps=4, num_stages=2),
+            triton.Config({"BLOCK_TOKENS": 256, "BLOCK_HEADS": 16, "BLOCK_D": 32}, num_warps=8, num_stages=3),
+            triton.Config({"BLOCK_TOKENS": 128, "BLOCK_HEADS": 32, "BLOCK_D": 32}, num_warps=8, num_stages=2),
         ],
         key=["seq_len"],
     )
