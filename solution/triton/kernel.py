@@ -1,22 +1,24 @@
 """
-Triton Kernel Template for FlashInfer Competition.
+Thin entry-point wrapper for the DSA top-k indexer implementation.
 
-Implement your kernel logic here. The entry point function name should match
-the `entry_point` setting in config.toml.
-
-See the track definition for required function signature and semantics.
+`config.toml` points to `kernel`, while the real implementation lives in
+`dsa_topk_indexer.py` under the definition-specific function name.
 """
 
-import triton
-import triton.language as tl
+from dsa_topk_indexer import dsa_topk_indexer_fp8_h64_d128_topk2048_ps64
 
 
-@triton.jit
-def kernel():
-    """
-    Your Triton kernel implementation.
-
-    TODO: Implement your kernel according to the track definition.
-    The function signature should match the track requirements.
-    """
-    pass
+def kernel(
+    q_index_fp8,
+    k_index_cache_fp8,
+    weights,
+    seq_lens,
+    block_table,
+):
+    return dsa_topk_indexer_fp8_h64_d128_topk2048_ps64(
+        q_index_fp8=q_index_fp8,
+        k_index_cache_fp8=k_index_cache_fp8,
+        weights=weights,
+        seq_lens=seq_lens,
+        block_table=block_table,
+    )
