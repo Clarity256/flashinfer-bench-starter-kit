@@ -31,6 +31,25 @@ def load_config() -> dict:
         return tomllib.load(f)
 
 
+def normalize_entry_point(language: str, entry_point: str) -> str:
+    """Accept legacy shorthand and normalize to <file_path>::<function_name>."""
+    if "::" in entry_point:
+        return entry_point
+
+    if "/" in entry_point or "\\" in entry_point:
+        raise ValueError(
+            f"Invalid entry point format: {entry_point}. "
+            'Expected "<file_path>::<function_name>".'
+        )
+
+    if language == "triton":
+        return f"kernel.py::{entry_point}"
+    if language == "cuda":
+        return f"binding.py::{entry_point}"
+
+    raise ValueError(f"Unsupported language: {language}")
+
+
 def pack_solution(output_path: Path = None) -> Path:
     """Pack solution files into a Solution JSON."""
     config = load_config()
@@ -39,7 +58,7 @@ def pack_solution(output_path: Path = None) -> Path:
     build_config = config["build"]
 
     language = build_config["language"]
-    entry_point = build_config["entry_point"]
+    entry_point = normalize_entry_point(language, build_config["entry_point"])
 
     # Determine source directory based on language
     if language == "triton":
